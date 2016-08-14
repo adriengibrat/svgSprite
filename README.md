@@ -80,7 +80,7 @@ npm i
 
 ### Quick & dirty CDN
 ```html
-<script src="https://cdn.rawgit.com/adriengibrat/svgSprite/v1.1.26/svgSprite.min.js"></script>
+<script src="https://cdn.rawgit.com/adriengibrat/svgSprite/v1.2.0/svgSprite.min.js"></script>
 ```
 
 ### Old school

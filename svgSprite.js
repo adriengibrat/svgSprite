@@ -5,7 +5,7 @@
 }(this, function () { 'use strict';
 
 	/**
-	 * svgSprite 1.1.26 – Inline SVG icons FTW
+	 * svgSprite 1.2.0 – Inline SVG icons FTW
 	 * Made with ♫·♪ & -♥- by Adrien Gibrat <adrien.gibrat@gmail.com>
 	 * Published under (WTFPL OR MIT) License
 	 */
