@@ -1,0 +1,98 @@
+{
+  "name": "svgSprite",
+  "version": "1.1.26",
+  "description": "Inline SVG icons FTW",
+  "author": "Adrien Gibrat <adrien.gibrat@gmail.com>",
+  "license": "(WTFPL OR MIT)",
+  "main": "svgSprite.js",
+  "min:main": "svgSprite.min.js",
+  "jsnext:main": "src/index.js",
+  "keywords": "browser, svg, inline, sprite, icons",
+  "engines": {
+    "node": ">= 4.0.0",
+    "npm": ">= 2.13.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/adriengibrat/svgSprite.git"
+  },
+  "eslintConfig": {
+    "env": {
+      "browser": true,
+      "node": true,
+      "es6": true
+    },
+    "parserOptions": {
+      "ecmaVersion": 6,
+      "sourceType": "module"
+    },
+    "extends": "eslint:recommended",
+    "rules": {
+      "semi": [
+        "warn",
+        "never"
+      ],
+      "comma-style": [
+        "warn",
+        "first"
+      ],
+      "operator-linebreak": [
+        "warn",
+        "before",
+        {
+          "overrides": {
+            "?": "after"
+          }
+        }
+      ],
+      "curly": [
+        "warn",
+        "multi",
+        "consistent"
+      ],
+      "yoda": [
+        "warn",
+        "always"
+      ],
+      "quotes": [
+        "warn",
+        "single",
+        {
+          "allowTemplateLiterals": true,
+          "avoidEscape": true
+        }
+      ],
+      "no-empty": [
+        "warn",
+        {
+          "allowEmptyCatch": true
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "start": "npm run build:src -- --watch",
+    "build": "npm run build:src && npm run build:min",
+    "build:src": "rollup --config",
+    "build:min": "rollup --config --environment build:min --output svgSprite.min.js",
+    "version": "npm run build && git add svgSprite.* && npm run version:readme && git add README.md",
+    "version:readme": "sed -i -- \"s/`git describe --abbrev=0 --tags`/$npm_config_tag_version_prefix$npm_package_version/g\" README.md",
+    "version:gh-pages": "git co gh-pages && git co master -- svgSprite.* && git ci -am \"update to $npm_package_version\" && git co master",
+    "version:push": "git push origin master --follow-tags && git push origin gh-pages",
+    "Xpostversion": "npm run version:gh-pages && npm run version:push",
+    "size": "npm run size:bundled --silent && npm run size:minified --silent",
+    "size:format": "wc -c | numfmt --to=iec-i --suffix=B",
+    "size:bundled": "echo \"bundled `cat $npm_package_main | npm run size:format`\"",
+    "size:minified": "echo \"minified + gziped `gzip --best --no-name --stdout $npm_package_min_main | npm run size:format`\"",
+    "lint": "eslint src"
+  },
+  "devDependencies": {
+    "eslint": "^3.0.0",
+    "rollup": "^0.34.7",
+    "rollup-plugin-buble": "^0.12.1",
+    "rollup-plugin-eslint": "^2.0.2",
+    "rollup-plugin-includepaths": "^0.1.5",
+    "rollup-plugin-uglify": "^1.0.1",
+    "rollup-watch": "^2.5.0"
+  }
+}

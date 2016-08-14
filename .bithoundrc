@@ -1,0 +1,9 @@
+{
+    "ignore": [
+        "rollup.config.js",
+        "svgSprite.*"
+    ],
+    "critics": {
+        "lint": {"engine": "eslint"}
+    }
+}

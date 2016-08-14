@@ -1,0 +1,4 @@
+.bithoundrc
+.gitignore
+.npmignore
+rollup.config.js
