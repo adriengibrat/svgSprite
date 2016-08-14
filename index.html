@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8"/>
+	<title>svgSprite – Inline SVG sprite FTW</title>
+	<link rel="stylesheet" type="text/css" href="style.css"/>
+	<script type="text/javascript" src="svgSprite.js"></script>
+	<script type="text/javascript">
+		/* svgSprite.inline({ [elements][, before] }) */
+		
+		// inlines all SVGs using an external resource
+		var done = svgSprite.inline()
+
+		after(1000, function () {
+			console.log(
+				'-> svgSprite.inline() returns a function\n'
+				, 'calling it always returns the list of SVGs already processed:\n'
+				, done(), '\n'
+				, 'when "elements" is not a collection\n'
+				, 'calling it with a truthy argument\n'
+				, 'also stops inlining new SVG nodes pointing to external resources\n'
+				//, done(true)
+			)
+		})
+
+		// inline specific SVGs using an external resource matching a CSS selector
+		svgSprite.inline({ elements: 'svg.custom' })
+
+		/* svgSprite({ source[, elements][, before] }) */
+
+		// svgSprite() injects single SVGs pointing to SVG sprite in elements matching 'selector'
+		// the attibute data-svg determines which SVG symbol to use for each element
+		// when not providing 'elements', the default '[data-svg]' CSS selector is used
+		// minimal required options are :
+		// svgSprite({ source: url || markup })
+
+		// 'elements' is a CSS selector or a dom node collection, see below
+		// 'source' is the SVG sprite resource url or markup
+		// 'before' is a callback that allow custom behavior
+		svgSprite({
+			elements: '.iconic'
+			, source: 'https://cdn.jsdelivr.net/open-iconic/1.1.0/sprite/open-iconic.min.svg'
+			, before: function (svg) {
+				// 'svg' is the SVG element before it is injected
+				svg.setAttribute('viewBox', '-1 -1 10 10') // add custom viewBox to SVGs
+			}
+			// a sprite using correctly sized SVG symbols, does not require viewBox attr ;)
+		})
+
+		// when 'elements' is a selector, even future inserted dom elements will be processed
+		insert(1000, '<i class="iconic icon icon--splash" data-svg="fullscreen-enter" title="iconic icon support is still on"></i>')
+
+		// example of 'before' callback to map data-svg attribute value to sprite specific id
+		// keep your markup clean even with custom naming policy in SVG sprite
+		svgSprite({
+			elements: '.material'
+			, source: 'https://cdn.rawgit.com/google/material-design-icons/master/sprites/svg-sprite/svg-sprite-action-symbol.svg'
+			, before: function (svg, id, use) {
+				// 'id' is the data-svg attribute value (used as default xlink id)
+				// 'use' callback allow to change the SVG <use> xlink:href attribute
+				use('#ic_' + id + '_24px')
+			}
+		})
+
+		// when 'elements' is a selector, svgSprite returns a function to stop adding SVG in new nodes matching this selector
+		var doneEvil = svgSprite({
+			elements: '.evil'
+			, source: 'https://cdn.rawgit.com/outpunk/evil-icons/master/assets/sprite.svg'
+			, before: function (svg, id, use) { use('#ei-' + id + '-icon') }
+		})
+
+		insert(700, '<i class="evil icon icon--spin" data-svg="spinner" title="evil icon support is on"></i>')
+
+		after(900, function () {
+			console.log(
+				'-> svgSprite() returns a function\n'
+				, 'calling it always returns the list of SVGs already processed.\n'
+				, doneEvil(), '\n'
+				, 'when "elements" is not a collection\n'
+				, 'calling it with a truthy argument\n'
+				, 'stops adding SVG in new nodes matching the selector\n'
+				, doneEvil(true), '\n'
+				, 'no more .evil icons for now on ;)'
+			)
+		})
+
+		insert(1000, '<i class="evil icon" data-svg="gear" title="evil icon support is off"></i>')
+
+		// return false in 'before' callback to avoid injecting single SVG (note: sprite has been injected anyway)
+		svgSprite({
+			elements: '.smarticons'
+			, source: 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/113375/sprite1.svg'
+			, before: function () { return false } // comment this to view the smarticons mushroom
+		})
+
+		// demo helpers
+		function after (ms, callback) {
+			return setTimeout(callback, ms)
+		}
+
+		function insert (ms, html) {
+			var div = document.createElement('div')
+			div.innerHTML = html.trim()
+			return after(ms, function () {
+				document.body.insertBefore(
+					document.createTextNode(' inserted: ')
+					, document.body.insertBefore(div.firstChild, null)
+				)
+			})
+		}
+	</script>
+</head>
+<body>
+
+	<i class="smarticons icon icon--wire" data-svg="si-harmony-mushroom"></i>
+
+	<ul>
+		<li><a href="https://github.com/adriengibrat/svgSprite/blob/gh-pages/index.html" target="source">commented sources</a> on <a href="https://github.com/adriengibrat/svgSprite">github</a></li>
+		<li><i>f12</i> to see logs in dev tool</li>
+	</ul>
+
+	<section rel="iconic icons">
+		<i class="iconic icon" data-svg="data-transfer-upload"></i>
+		<icon class="iconic icon icon--flip" title="animate svg tag" data-svg="action-redo"></icon>
+	</section>
+
+	<section rel="material icons">
+		<i class="material icon" data-svg="book"></i>
+		<span class="material icon icon--draw" title="draw line" data-svg="delete"></span>
+	</section>
+
+	<section rel="evil icons">
+		<i class="evil icon" data-svg="pencil"></i>
+		<a class="evil icon icon--shadow" title="drop shadow" data-svg="sc-github"></a>
+	</section>
+
+	<section rel="fontastic icons">
+		<i class="fontastic icon" data-svg="settings"></i>
+		<button class="fontastic icon icon--fall" title="animate use tag" data-svg="calendar"></button>
+	</section>
+
+	<section rel="octicons icons">
+		<i class="icon icon-gist"></i>
+		<label class="icon icon-heart icon--red" title="text color"></label>
+	</section>
+
+	<section rel="inlined SVGs" title="CORS issues if not inlined">
+		<svg class="icon">
+			<use xlink:href="https://cdn.rawgit.com/google/material-design-icons/master/sprites/svg-sprite/svg-sprite-action-symbol.svg#ic_announcement_24px"></use>
+		</svg>
+		<span title="wireframe">
+			<svg class="icon icon--wire" viewBox="-1 -1 10 10">
+				<use xlink:href="https://cdn.jsdelivr.net/open-iconic/1.1.0/sprite/open-iconic.min.svg#calculator"></use>
+			</svg>
+		</span>
+	</section>
+
+	<section rel="local SVG markup icon" title="stroke width">
+		<i class="local icon" data-svg="add"></i>
+	</section>
+
+	<i class="icon" title="SVG as css background (no support if you see the devil)" style="background: url(https://www.broken-links.com/tests/images/faces.svg#monkey-view) center center / contain no-repeat"></i>
+	<img class="icon" title="SVG as img src" src="https://www.broken-links.com/tests/images/faces.svg#monkey-view"/>
+
+	<script type="text/javascript">
+		// did you noticed, previous examples works fine even if dom was not loaded yet ;)
+		// now dom is loaded, we can use custom dom elements collections
+
+		// 'elements' may be any type of array-like collection: NodeList, Array, jQuery
+		var list = svgSprite({
+			elements: document.getElementsByClassName('fontastic')
+			, source: 'https://file.myfontastic.com/HRRux9sfywcbQUjwRTbXvm/sprites/1465216908.svg'
+			, before: function (svg, id, use) { use('#icon-' + id) }
+		})
+
+		after(1000, function () {
+			console.log(
+				'-> svgSprite() returns a function\n'
+				, 'calling it when "elements" is an array-like collection\n'
+				, 'just returns the list of SVGs already processed:\n'
+				, list()
+			)
+			console.warn(
+				'note: all process are async, the lists may contain null values:\n'
+				, '• when the SVG is not injected yet.\n'
+				, '• when the SVG/use tags have been removed from DOM.\n'
+				, '• when the SVG injection has been prevented (before() returning false).'
+			)
+		})
+
+		// 'before' callback allow advanced customization to help you migrate from any icons system
+		svgSprite({
+			elements: document.querySelectorAll('[class*=icon-]')
+			, source: 'https://cdn.rawgit.com/primer/octicons/master/build/sprite.octicons.svg'
+			, before: function (svg, id, use, element) {
+				svg.setAttribute('viewBox', '0 -1 7 9')
+				var icon = /\bicon-(\w+)\b/.exec(element.className) // lookup icon-xxx class
+				return icon ? use('#' + icon[1]) : false // use xxx as SVG symbol or do not inject
+			}
+		})
+
+		// 'source' may also be the markup of a SVG sprite
+		svgSprite({
+			elements: '.local'
+			, source: '<svg><symbol id="add" viewBox="0 0 40 40"><path stroke="grey" d="M20 12v16m-8-8h16"/></symbol></svg>'
+			, before: function (svg, id, use, element, sprite, source) {
+				after(1100, function () {
+					console.log(
+						'-> svgSprite() "before" callback recieve all you need to implement custom logic!\n'
+						, '• the SVG element before it is injected:'
+						, svg, '\n'
+						, '• the id used by default as fragment in xlink:href attribute (e.g. data-svg value):'
+						, id, '\n'
+						, '• a utility function to optionaly change the SVG <use> xlink:href attribute:'
+						, use.name
+						, '\n'
+						, '• the element where the SVG will be injected:'
+						, element, '\n'
+						, '• the SVG sprite already injected in DOM:'
+						, sprite, '\n'
+						, '• the source (URL or markup) of the SVG sprite:'
+						, source
+					)
+				})
+			}
+		})
+
+		// 'elements' may also be a collection for svgSprite.inline
+		svgSprite.inline({
+			elements: [document.querySelector('svg.icon--wire')]
+			, before: function (svg, id, sprite, source) {
+				after(1200, function () {
+					console.log(
+						'-> svgSprite.inline() "before" callback recieve all you need to implement custom logic!\n'
+						, '• the SVG element pointing to external resource:'
+						, svg, '\n'
+						, '• the id used as fragment in xlink:href attribute:'
+						, id, '\n'
+						, '• the SVG sprite already injected in DOM:'
+						, sprite, '\n'
+						, '• the source URL of the SVG sprite:'
+						, source
+					)
+				})
+			}
+		})
+	</script>
+</body>
+</html>
