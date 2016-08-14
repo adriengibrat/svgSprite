@@ -79,7 +79,7 @@
     "version:readme": "sed -i -- \"s/`git describe --abbrev=0 --tags`/$npm_config_tag_version_prefix$npm_package_version/g\" README.md",
     "version:gh-pages": "git co gh-pages && git co master -- svgSprite.* && git ci -am \"update to $npm_package_version\" && git co master",
     "version:push": "git push origin master --follow-tags && git push origin gh-pages",
-    "Xpostversion": "npm run version:gh-pages && npm run version:push",
+    "postversion": "npm run version:gh-pages && npm run version:push",
     "size": "npm run size:bundled --silent && npm run size:minified --silent",
     "size:format": "wc -c | numfmt --to=iec-i --suffix=B",
     "size:bundled": "echo \"bundled `cat $npm_package_main | npm run size:format`\"",
